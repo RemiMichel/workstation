@@ -14,10 +14,10 @@ services:
       - $NGINX_HOME_FOLDER/ssl/server.crt:/etc/ssl/certs/$NGINX_SSL_FILE_BASE_NAME.crt
       - $NGINX_HOME_FOLDER/ssl/server.key:/etc/ssl/private/$NGINX_SSL_FILE_BASE_NAME.key
       # Templates
-      - $NGINX_HOME_FOLDER/templates/global.template:/etc/nginx/template/global.template
-      - $NGINX_HOME_FOLDER/templates/portainer.template:/etc/nginx/template/portainer.template
-      - $NGINX_HOME_FOLDER/templates/gitlab.template:/etc/nginx/template/gitlab.template
-      - $NGINX_HOME_FOLDER/templates/nextcloud.template:/etc/nginx/template/nextcloud.template
+      - $NGINX_HOME_FOLDER/templates/global.template:/etc/nginx/templates/global.template
+      - $NGINX_HOME_FOLDER/templates/portainer.template:/etc/nginx/templates/portainer.template
+      - $NGINX_HOME_FOLDER/templates/gitlab.template:/etc/nginx/templates/gitlab.template
+      - $NGINX_HOME_FOLDER/templates/nextcloud.template:/etc/nginx/templates/nextcloud.template
     command: ./loadenv.sh
 
   portainer:
