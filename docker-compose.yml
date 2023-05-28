@@ -3,6 +3,7 @@ version: '3.6'
 services:
   nginx:
     image: nginx:latest
+    container_name: workstation-nginx-proxy
     ports:
       - '80:80'
       - '443:443'
@@ -19,16 +20,20 @@ services:
       - $NGINX_HOME_FOLDER/templates/gitlab.template:/etc/nginx/templates/gitlab.template
       - $NGINX_HOME_FOLDER/templates/nextcloud.template:/etc/nginx/templates/nextcloud.template
     command: ./loadenv.sh
+    restart: always
 
   portainer:
     image: portainer/portainer-ce:latest
+    container_name: workstation-portainer
     command: -H unix:///var/run/docker.sock
     volumes:
       - $PORTAINER_DOCKER_SOCKET:/var/run/docker.sock
       - $PORTAINER_HOME/data:/data
+    restart: always
 
   gitlab:
     image: gitlab/gitlab-ce:latest
+    container_name: gitlab-server
     restart: always
     hostname: $GITLAB_EXTERNAL_HOST
     environment:
@@ -45,6 +50,7 @@ services:
 
   nextcloud-application:
     image: nextcloud:latest
+    container_name: nextcloud-application
     restart: always
     links:
       - nextcloud-database
@@ -58,6 +64,7 @@ services:
 
   nextcloud-database:
     image: mariadb:latest
+    container_name: nextcloud-database
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
