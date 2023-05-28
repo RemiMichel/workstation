@@ -1,0 +1,69 @@
+version: '3.6'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - '80:80'
+      - '443:443'
+    env_file: $NGINX_ENV_FILE
+    volumes:
+      - $NGINX_HOME_FOLDER/logs:/var/log/nginx/
+      - $NGINX_HOME_FOLDER/loadenv.sh:/loadenv.sh:+x
+      # SSL
+      - $NGINX_HOME_FOLDER/ssl/server.crt:/etc/ssl/certs/$NGINX_SSL_FILE_BASE_NAME.crt
+      - $NGINX_HOME_FOLDER/ssl/server.key:/etc/ssl/private/$NGINX_SSL_FILE_BASE_NAME.key
+      # Templates
+      - $NGINX_HOME_FOLDER/templates/global.template:/etc/nginx/template/global.template
+      - $NGINX_HOME_FOLDER/templates/portainer.template:/etc/nginx/template/portainer.template
+      - $NGINX_HOME_FOLDER/templates/gitlab.template:/etc/nginx/template/gitlab.template
+      - $NGINX_HOME_FOLDER/templates/nextcloud.template:/etc/nginx/template/nextcloud.template
+    command: ./loadenv.sh
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - $PORTAINER_DOCKER_SOCKET:/var/run/docker.sock
+      - $PORTAINER_HOME/data:/data
+
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    restart: always
+    hostname: $GITLAB_EXTERNAL_HOST
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://$GITLAB_EXTERNAL_HOST:$GITLAB_EXTERNAL_PORT'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+        listen_port = 80
+        listen_https = false
+    volumes:
+      - $GITLAB_HOME/config:/etc/gitlab
+      - $GITLAB_HOME/logs:/var/log/gitlab
+      - $GITLAB_HOME/data:/var/opt/gitlab
+    shm_size: 256m
+
+  nextcloud-application:
+    image: nextcloud:latest
+    restart: always
+    links:
+      - nextcloud-database
+    volumes:
+      - $NEXTCLOUD_HOME/application:/var/www/html
+    environment:
+      - MYSQL_PASSWORD=$NEXTCLOUD_MYSQL_PASSWORD
+      - MYSQL_DATABASE=$NEXTCLOUD_MYSQL_DATABASE
+      - MYSQL_USER=$NEXTCLOUD_MYSQL_USER
+      - MYSQL_HOST=nextcloud-database
+
+  nextcloud-database:
+    image: mariadb:latest
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    volumes:
+      - $NEXTCLOUD_HOME/database:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=$NEXTCLOUD_MYSQL_ROOT_PASSWORD
+      - MYSQL_PASSWORD=$NEXTCLOUD_MYSQL_PASSWORD
+      - MYSQL_DATABASE=$NEXTCLOUD_MYSQL_DATABASE
+      - MYSQL_USER=$NEXTCLOUD_MYSQL_USER

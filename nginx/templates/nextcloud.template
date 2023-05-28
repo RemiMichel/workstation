@@ -1,0 +1,17 @@
+server {
+    listen       ${NGINX_HTTP_PORT};
+    listen  [::]:${NGINX_HTTP_PORT};
+
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    ssl_certificate /etc/ssl/certs/${NGINX_SSL_FILE_BASE_NAME}.crt;
+    ssl_certificate_key /etc/ssl/private/${NGINX_SSL_FILE_BASE_NAME}.key;
+
+    server_name    ${NEXTCLOUD_HOST};
+    location / {
+        proxy_pass http://nextcloud-application:${NEXTCLOUD_PORT};
+    }
+
+}
+

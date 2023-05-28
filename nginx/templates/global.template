@@ -1,0 +1,32 @@
+
+
+include /etc/nginx/sites-enabled/*.*;
+
+server {
+    listen       ${NGINX_HTTP_PORT};
+    listen  [::]:${NGINX_HTTP_PORT};
+
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    ssl_certificate /etc/ssl/certs/${NGINX_SSL_FILE_BASE_NAME}.crt;
+    ssl_certificate_key /etc/ssl/private/${NGINX_SSL_FILE_BASE_NAME}.key;
+
+    server_name  ${NGINX_SERVER_NAME};
+
+    location / {
+        root   ${NGINX_ROOT_PATH};
+        index  ${NGINX_INDEX_FILE};
+    }
+
+    # error_page  404              ${NGINX_404_ERROR_PAGE_PATH};
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  ${NGINX_50X_ERROR_PAGE_PATH};
+    location = /50x.html {
+        root   ${NGINX_ROOT_PATH};
+    }
+
+}
+
