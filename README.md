@@ -49,4 +49,7 @@ For that, i create a gitlab stack and nextcloud stack with portainer
 Simple Gitlab with runner
 ## Nextcloud stack
 Application with MySQL database.
+###  Configuration
+- Set up the environment variables   
+- OR override `$NEXTCLOUD_HOME/application/config/config.php` once the service installed
 
