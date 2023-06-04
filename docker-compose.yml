@@ -64,6 +64,8 @@ services:
       - MYSQL_HOST=nextcloud-database
       - TRUSTED_DOMAINS=$NEXTCLOUD_HOST
       - APPLICATION_HOST=$NEXTCLOUD_HOST
+      - APPLICATION_SALT=$NEXTCLOUD_SALT
+      - APPLICATION_SECRET=$NEXTCLOUD_SECRET
 
   nextcloud-database:
     image: mariadb:latest
