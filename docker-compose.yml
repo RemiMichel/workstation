@@ -56,11 +56,14 @@ services:
       - nextcloud-database
     volumes:
       - $NEXTCLOUD_HOME/application:/var/www/html
+      - $NEXTCLOUD_HOME/config.php:/var/www/html/config/config.php
     environment:
       - MYSQL_PASSWORD=$NEXTCLOUD_MYSQL_PASSWORD
       - MYSQL_DATABASE=$NEXTCLOUD_MYSQL_DATABASE
       - MYSQL_USER=$NEXTCLOUD_MYSQL_USER
       - MYSQL_HOST=nextcloud-database
+      - TRUSTED_DOMAINS=$NEXTCLOUD_HOST
+      - APPLICATION_HOST=$NEXTCLOUD_HOST
 
   nextcloud-database:
     image: mariadb:latest
