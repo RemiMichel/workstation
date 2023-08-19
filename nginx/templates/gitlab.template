@@ -5,13 +5,22 @@ server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
 
+    listen ${GITLAB_EXTERNAL_PORT};
+    listen [::]:${GITLAB_EXTERNAL_PORT};
+
     ssl_certificate /etc/ssl/certs/${NGINX_SSL_FILE_BASE_NAME}.crt;
     ssl_certificate_key /etc/ssl/private/${NGINX_SSL_FILE_BASE_NAME}.key;
 
     server_name    ${GITLAB_EXTERNAL_HOST};
     location / {
-        proxy_pass http://gitlab:${GITLAB_EXTERNAL_PORT};
-    }
 
+        add_header       X-Served-By $${q}host;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Scheme $${q}scheme;
+        proxy_set_header X-Forwarded-Proto  $${q}scheme;
+        proxy_set_header X-Forwarded-For    $${q}remote_addr;
+        proxy_set_header X-Real-IP          $${q}remote_addr;
+        proxy_pass       http://gitlab:${GITLAB_EXTERNAL_PORT};
+    }
 }
 
