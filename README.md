@@ -42,6 +42,7 @@ docker compose -p workstation up -d
 | Variable | Description                                  |
 |----------|----------------------------------------------|
 | BIND9_DOCKER_IP     | Bind9 container ip inside docker network     |
+
 Once you know the ip address of your bind9 container in your docker network, you have to set the .env variable. Then recreate Wireguard container.
 ```shell
 docker compose -p workstation up --remove-orphans --force-recreate -d --build wireguard
