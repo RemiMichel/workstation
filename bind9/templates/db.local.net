@@ -1,0 +1,19 @@
+$${q}TTL    3600 ;
+
+$${q}ORIGIN $DOMAIN.
+
+@       IN      SOA     ns.$DOMAIN. admin.$DOMAIN. (
+                          2023061700 ; Serial
+                          1d         ; Refresh
+                          1h         ; Retry
+                          1w         ; Expire
+                          1h         ; Negative Cache TTL
+                  )
+
+             IN      NS      ns.$DOMAIN.
+ns           IN      A       $IP
+
+proxy        IN      A      $HOST_IP
+portainer    IN      A      $HOST_IP
+gitlab       IN      A      $HOST_IP
+nextcloud    IN      A      $HOST_IP

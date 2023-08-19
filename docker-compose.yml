@@ -31,6 +31,46 @@ services:
       - $PORTAINER_HOME/data:/data
     restart: always
 
+  bind9:
+    image: ubuntu/bind9:latest
+    container_name: workstation-bind9
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - $BIND9_HOME/loadenv.sh:/loadenv.sh
+      - $BIND9_HOME/configuration:/etc/bind:rw
+      - $BIND9_HOME/templates:/templates:rw
+      - $BIND9_HOME/cache:/var/cache/bind:rw
+    environment:
+      - HOST_IP=$WORKSTATION_IP
+      - DOMAIN=$WORKSTATION_DOMAIN
+      - TZ=Europe/Paris
+    command: ./loadenv.sh
+    restart: always
+
+  wireguard:
+    image: linuxserver/wireguard:latest
+    container_name: workstation-wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - SERVERPORT=$WIREGUARD_PORT
+      - PEERS=$WIREGUARD_PEERS
+      - PEERDNS=$BIND9_DOCKER_IP
+    volumes:
+      - $WIREGUARD_HOME/config:/config
+      - /lib/modules:/lib/modules
+    ports:
+      - "51820:51820/udp"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: always
+
   gitlab:
     image: gitlab/gitlab-ce:latest
     container_name: gitlab-server
